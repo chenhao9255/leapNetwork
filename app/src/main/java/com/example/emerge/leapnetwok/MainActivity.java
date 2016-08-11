@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     //定位的模式和相关参数
     public AMapLocationClientOption mLocationOption = null;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void scanWifi() {
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifiManager.startScan();
         scanWifiResultList = wifiManager.getScanResults();
 
         Log.d("chenhao", "total: " + scanWifiResultList.size());
