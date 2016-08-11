@@ -6,8 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -16,12 +14,40 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private WifiManager wifiManager;
     List<ScanResult> scanWifiResultList;
+
+    //声明AMapLocationClient类对象
+    public AMapLocationClient mLocationClient = null;
+    //声明定位回调监听器
+    public AMapLocationListener mLocationListener = new AMapLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation aMapLocation) {
+            if(aMapLocation == null){
+                return;
+            }
+            if(aMapLocation.getErrorCode() == 0){
+                Log.d("chenhao",aMapLocation.getLocationType() + " " +
+                        aMapLocation.getLatitude() + " " + aMapLocation.getAltitude() + " " +
+                        aMapLocation.getAccuracy() + " " + aMapLocation.getPoiName() + " " +aMapLocation.getAoiName()
+                        );
+            }else{
+                Log.d("chenhao", "error code: " + aMapLocation.getErrorCode() + " " + aMapLocation.getErrorInfo());
+            }
+        }
+    };
+    //定位的模式和相关参数
+    public AMapLocationClientOption mLocationOption = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         scanWifi();
         scanBluetooth();
-        getGPSLocation();
+        setupLBS();
 
         // 注册用以接收到已搜索到的蓝牙设备的receiver
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -50,6 +76,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mReceiver);
+
+        mLocationClient.stopLocation();
+        mLocationClient.onDestroy();
+    }
+
+    private void setupLBS(){
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        //设置定位回调监听
+        mLocationClient.setLocationListener(mLocationListener);
+
+        mLocationOption = new AMapLocationClientOption();
+        //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        mLocationOption.setOnceLocationLatest(true);
+        mLocationOption.setOnceLocationLatest(true);
+        mLocationOption.setWifiActiveScan(true);
+
+        //给定位客户端对象设置定位参数
+        mLocationClient.setLocationOption(mLocationOption);
+        //启动定位
+        mLocationClient.startLocation();
+
     }
 
     private void scanWifi() {
@@ -77,17 +126,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "can't open bluetooth", Toast.LENGTH_SHORT).show();
         }
     }
-
-    private void getGPSLocation(){
-       /* LocationManager locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location loc = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (loc != null) {
-            Log.d("chenhao", loc.getLatitude() + " " + loc.getLongitude());
-        }else{
-            Toast.makeText(this, "no GPS", Toast.LENGTH_SHORT).show();
-        }*/
-    }
-
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
