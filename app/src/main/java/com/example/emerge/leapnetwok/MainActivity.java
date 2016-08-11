@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -13,8 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.List;
 
@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private WifiManager wifiManager;
     List<ScanResult> scanWifiResultList;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         scanWifi();
         scanBluetooth();
+        getGPSLocation();
 
         // 注册用以接收到已搜索到的蓝牙设备的receiver
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -76,6 +76,16 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "can't open bluetooth", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void getGPSLocation(){
+       /* LocationManager locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location loc = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (loc != null) {
+            Log.d("chenhao", loc.getLatitude() + " " + loc.getLongitude());
+        }else{
+            Toast.makeText(this, "no GPS", Toast.LENGTH_SHORT).show();
+        }*/
     }
 
 
