@@ -12,5 +12,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello Leap Network!" />
+        android:text="Hello Leap Network!"
+        android:id="@+id/textView" />
+
+    <Button
+        android:id="@+id/track_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Track Loc"
+        android:layout_below="@+id/textView" />
 </RelativeLayout>
